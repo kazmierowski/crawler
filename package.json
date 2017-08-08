@@ -1,0 +1,25 @@
+{
+  "name": "crawler",
+  "version": "0.0.1",
+  "description": "Web crawler",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/hiroshi_ota/crawler.git"
+  },
+  "keywords": [
+    "crawler",
+    "web-crawler"
+  ],
+  "author": "Kamil Kazmierowski",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/hiroshi_ota/crawler#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.15.4",
+    "request": "^2.81.0"
+  }
+}
