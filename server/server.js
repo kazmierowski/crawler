@@ -1,27 +1,35 @@
 const express = require('express');
 const request = require('request');
-// const cheerio = require('cheerio');
-const http    = require('http');
-const app     = express();
+const http = require('http');
+const fs = require('fs');
+const app = express();
 
 const Crawler = require('./crawler/Crawler');
-const helper  = require('./crawler/helpers');
+const helper = require('./crawler/helpers');
 
 const port = '5000';
+const dir = './tmp';
 
 app.get('/crawl', (req, res) => {
 
-    let url = 'http://wiprodigital.com';
-    let domain = helper.retrieveDomainFromUrl(url);
+    let url = ['http://wiprodigital.com/'];
+    let domain = helper.retrieveDomainFromUrl(url[0]);
 
-    request(url, (err, response, body) => {
+    request(url[0], (err, response, body) => {
 
-        let crawl = new Crawler(body, {domain: domain});
+        if (err) throw err;
 
-        if(err) { throw err }
-        else {
-            // let html = cheerio.load(body);
-        }
+        let crawl = new Crawler(body, {domain: domain}, url, (data) => {
+
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+            fs.writeFile('./tmp/result.json', JSON.stringify(data), (err) => {
+                if (err) throw err;
+                console.log('The file is saved in ./tmp/result.json');
+            })
+        });
+
+        crawl.startCrawling();
     })
 });
 
