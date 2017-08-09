@@ -1,3 +1,16 @@
+/**
+ * Server script
+ *
+ * @type {*|createApplication}
+ *
+ * @uses node modules: express, request, http, fs
+ * @uses Crawler class
+ * @uses custom helpers
+ *
+ * @author [kamil.kazmierowski@gmail.com]
+ */
+
+
 const express = require('express');
 const request = require('request');
 const http = require('http');
@@ -26,10 +39,12 @@ app.get('/crawl', (req, res) => {
 
             fs.writeFile('./tmp/result.json', JSON.stringify(data), (err) => {
                 if (err) throw err;
+                // for visualisation - not needed in production
                 console.log('File with result is saved in ./tmp/result.json');
+                console.log('Total number of visited links: ', linksCount);
+                console.log('Execution time: ', (new Date() - timeStart) / 1000, 's');
             });
-            console.log('Total number of visited links: ', linksCount);
-            console.log('Execution time: ', (new Date() - timeStart) / 1000, 's');
+
         });
 
         crawl.startCrawling();
