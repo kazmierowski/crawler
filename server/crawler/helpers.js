@@ -27,7 +27,8 @@ const isValidLinkForCrawling = (link, domain) => {
  * @returns {boolean}
  */
 const isValidLink = (link) => {
-    return /^(f|ht)tps?:\/\//i.test(link)
+    return link !== undefined ?
+        /^(f|ht)tps?:\/\//i.test(link) : false;
 };
 
 /**
@@ -45,17 +46,19 @@ const retrieveAllUrlAttributes = (allLinkObjects, domain, filter = [], forCrawl 
     let option = forCrawl ? isValidLinkForCrawling : isValidLink;
 
     allLinkObjects.each((i, object) => {
-        if(option(object.attribs.href, domain) && filter.indexOf(object.attribs.href) === -1) {
+        let url = object.attribs.href || object.attribs.src;
+
+        if(option(url, domain) && filter.indexOf(url) === -1) {
             allLinks.push(
-                object.attribs.href.charAt(0) === '/' ?
-                    'http://' + domain + object.attribs.href : object.attribs.href
+                url.charAt(0) === '/' ?
+                    'http://' + domain + url : url
             )
         }
 
-        else if(option(object.attribs.src) && filter.indexOf(object.attribs.src) === -1) {
+        else if(option(url) && filter.indexOf(url) === -1) {
             allLinks.push(
-                object.attribs.src.charAt(0) === '/' ?
-                    'http://' + domain + object.attribs.src : object.attribs.src
+                url.charAt(0) === '/' ?
+                    'http://' + domain + url : url
             )
         }
     });
@@ -80,7 +83,6 @@ const retrieveDomainFromUrl = (url) => {
     domain = domain.split(':')[0];
     domain = domain.split('?')[0];
 
-    // console.log(domain);
     return domain;
 };
 
@@ -94,6 +96,27 @@ const retrieveDomainFromUrl = (url) => {
  */
 const checkDomainValidity = (testDomain, domain) => {
     return testDomain === domain;
+};
+
+/**
+ * Changes wp.pl to http://wp.pl
+ *
+ * @param {string} domain
+ * @returns {string | *}
+ */
+const changeDomainToValidUrl = (domain) => {
+
+    if(domain === undefined) return;
+
+    let firstFour = domain.slice(0,4);
+
+    if(firstFour === 'www.') {
+        return 'http://' + domain;
+    } else if(firstFour !== 'www.' && firstFour !== 'http') {
+        return 'http://' + domain;
+    }
+
+    return domain;
 };
 
 /**
@@ -115,4 +138,5 @@ module.exports.isValidLink = isValidLink;
 module.exports.retrieveAllUrlAttributes = retrieveAllUrlAttributes;
 module.exports.retrieveDomainFromUrl = retrieveDomainFromUrl;
 module.exports.checkDomainValidity = checkDomainValidity;
+module.exports.changeDomainToValidUrl = changeDomainToValidUrl;
 module.exports.createLinksTreeInObject = createLinksTreeInObject;

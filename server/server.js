@@ -26,7 +26,7 @@ const dir = './tmp';
 // ready to use on website
 // app.get('/crawl', (req, res) => {
 
-let url = [process.argv[2] || 'http://wiprodigital.com/'];
+let url = [helper.changeDomainToValidUrl(process.argv[2]) || 'http://wiprodigital.com/'];
 let domain = helper.retrieveDomainFromUrl(url[0]);
 
 request(url[0], (err, response, body) => {
@@ -39,10 +39,12 @@ request(url[0], (err, response, body) => {
         if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
         fs.writeFile('./tmp/result.json', JSON.stringify(data), (err) => {
+
             if (err) throw err;
+
             // for visualisation - not needed in production
             console.log('File with result is saved in ./tmp/result.json');
-            console.log('Total number of visited links: ', linksCount);
+            console.log('Total number of visited links: ', crawl.getLinksCount());
             console.log('Execution time: ', (new Date() - timeStart) / 1000, 's');
         });
 
@@ -55,5 +57,5 @@ request(url[0], (err, response, body) => {
 const server = http.createServer(app);
 
 server.listen(port, (err) => {
-    console.log(err ? err : `API running on localhost:${{port}}`);
+    console.log(err ? err : `API running on localhost:${port}`);
 });

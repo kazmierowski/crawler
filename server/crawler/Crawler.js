@@ -31,7 +31,7 @@ class Crawler {
         this.linksCount = 0;
         this.result = {};
 
-        this.callback = callback;
+        this.callback = callback || function() {};
     }
 
     /**
@@ -54,7 +54,7 @@ class Crawler {
      */
     loadNextBody(url) {
         this.visited.push(url);
-        this.linksCount ++;
+        this.linksCount++;
         return rp(url, (err, response, body) => {})
     }
 
@@ -93,7 +93,7 @@ class Crawler {
         let nextUrl = this.getNextProperUrl();
 
         if (nextUrl === undefined) {
-            this.callback(this.result, this.linksCount);
+            this.callback(this.result);
             return false;
         }
 
@@ -133,7 +133,15 @@ class Crawler {
         console.log('==========================');
 
         return nextUrl;
+    }
 
+    /**
+     * Returns visited links count
+     *
+     * @returns {number}
+     */
+    getLinksCount() {
+        return this.linksCount;
     }
 }
 
