@@ -19,14 +19,17 @@ app.get('/crawl', (req, res) => {
 
         if (err) throw err;
 
-        let crawl = new Crawler(body, {domain: domain}, url, (data) => {
+        let timeStart = new Date();
+        let crawl = new Crawler(body, {domain: domain}, url, (data, linksCount) => {
 
             if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
             fs.writeFile('./tmp/result.json', JSON.stringify(data), (err) => {
                 if (err) throw err;
-                console.log('The file is saved in ./tmp/result.json');
-            })
+                console.log('File with result is saved in ./tmp/result.json');
+            });
+            console.log('Total number of visited links: ', linksCount);
+            console.log('Execution time: ', (new Date() - timeStart) / 1000, 's');
         });
 
         crawl.startCrawling();

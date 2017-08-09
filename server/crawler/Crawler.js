@@ -6,6 +6,7 @@
 const cheerio = require('cheerio');
 const helper = require('./helpers');
 const rp = require('request-promise');
+const objectAssign = require('object-assign');
 
 class Crawler {
 
@@ -15,18 +16,20 @@ class Crawler {
         this.allLinks = linksArray;
 
         this.result = {};
-        this.visited = linksArray;
+        this.visited = [];
+        this.linksCount = 0;
 
         this.callback = callback;
     }
 
     startCrawling() {
-        this.allLinks = [...this.allLinks, ...this.getAllLinks([this.visited])];
+        this.allLinks = [...this.allLinks, ...this.getAllLinks([this.visited]).links];
         this.getAnotherPage();
     }
 
     loadNextBody(url) {
         this.visited.push(url);
+        this.linksCount ++;
         return rp(url, (err, response, body) => {})
     }
 
@@ -36,7 +39,15 @@ class Crawler {
 
     getAllLinks(filter = [], forCrawl = true) {
         let $ = this.traversBody();
-        return helper.retrieveAllHrefAttributes($('a' || 'img'), this.options.domain, filter, forCrawl);
+
+        // let testArr = ['kamil', 'ania', 'alicja', 'ania', 'kamil'];
+        // console.log([...new Set(testArr)]);
+        // return;
+
+        return {
+            links: helper.retrieveAllHrefAttributes($('a'), this.options.domain, filter, forCrawl),
+            images: helper.retrieveAllHrefAttributes($('img'), this.options.domain, filter, forCrawl)
+        };
     }
 
     getAnotherPage() {
@@ -44,16 +55,18 @@ class Crawler {
         let nextUrl = this.getNextProperUrl();
 
         if (nextUrl === undefined) {
-            this.callback(this.result);
+            this.callback(this.result, this.linksCount);
             return false;
         }
 
         this.loadNextBody(nextUrl)
             .then((body) => {
                 this.body = body;
-                this.result[nextUrl] = helper.createLinksTreeInObject(this.getAllLinks([], false));
-                this.allLinks = [...this.allLinks, ...this.getAllLinks(this.visited)];
-
+                this.result[nextUrl] = {
+                    links: helper.createLinksTreeInObject(this.getAllLinks([], false).links),
+                    images: helper.createLinksTreeInObject(this.getAllLinks([], false).images)
+                };
+                this.allLinks = [...this.allLinks, ...this.getAllLinks(this.visited).links];
             }, (err) => {
                 console.error('URL access denied');
             })

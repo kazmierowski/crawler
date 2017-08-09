@@ -10,20 +10,27 @@ const isValidLink = (link) => {
     return /^(f|ht)tps?:\/\//i.test(link)
 };
 
-const retrieveAllHrefAttributes = (allLinkObjects, domain, filter, destination) => {
+const retrieveAllHrefAttributes = (allLinkObjects, domain, filter, forCrawl) => {
     let allLinks = [];
-    let option = destination ? isValidLinkForCrawling : isValidLink;
+    let option = forCrawl ? isValidLinkForCrawling : isValidLink;
 
-    allLinkObjects.each((i, link) => {
-        if(option(link.attribs.href, domain) && filter.indexOf(link.attribs.href) === -1) {
+    allLinkObjects.each((i, object) => {
+        if(option(object.attribs.href, domain) && filter.indexOf(object.attribs.href) === -1) {
             allLinks.push(
-                link.attribs.href.charAt(0) === '/' ?
-                    'http://' + domain + link.attribs.href : link.attribs.href
+                object.attribs.href.charAt(0) === '/' ?
+                    'http://' + domain + object.attribs.href : object.attribs.href
+            )
+        }
+
+        else if(option(object.attribs.src) && filter.indexOf(object.attribs.src) === -1) {
+            allLinks.push(
+                object.attribs.src.charAt(0) === '/' ?
+                    'http://' + domain + object.attribs.src : object.attribs.src
             )
         }
     });
 
-    return allLinks;
+    return [...new Set(allLinks)];
 };
 
 const retrieveDomainFromUrl = (url) => {
