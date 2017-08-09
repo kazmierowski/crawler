@@ -23,33 +23,34 @@ const helper = require('./crawler/helpers');
 const port = '5000';
 const dir = './tmp';
 
-app.get('/crawl', (req, res) => {
+// ready to use on website
+// app.get('/crawl', (req, res) => {
 
-    let url = ['http://wiprodigital.com/'];
-    let domain = helper.retrieveDomainFromUrl(url[0]);
+let url = [process.argv[2] || 'http://wiprodigital.com/'];
+let domain = helper.retrieveDomainFromUrl(url[0]);
 
-    request(url[0], (err, response, body) => {
+request(url[0], (err, response, body) => {
 
-        if (err) throw err;
+    if (err) throw err;
 
-        let timeStart = new Date();
-        let crawl = new Crawler(body, {domain: domain}, url, (data, linksCount) => {
+    let timeStart = new Date();
+    let crawl = new Crawler(body, {domain: domain}, url, (data, linksCount) => {
 
-            if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
-            fs.writeFile('./tmp/result.json', JSON.stringify(data), (err) => {
-                if (err) throw err;
-                // for visualisation - not needed in production
-                console.log('File with result is saved in ./tmp/result.json');
-                console.log('Total number of visited links: ', linksCount);
-                console.log('Execution time: ', (new Date() - timeStart) / 1000, 's');
-            });
-
+        fs.writeFile('./tmp/result.json', JSON.stringify(data), (err) => {
+            if (err) throw err;
+            // for visualisation - not needed in production
+            console.log('File with result is saved in ./tmp/result.json');
+            console.log('Total number of visited links: ', linksCount);
+            console.log('Execution time: ', (new Date() - timeStart) / 1000, 's');
         });
 
-        crawl.startCrawling();
-    })
+    });
+
+    crawl.startCrawling();
 });
+// });
 
 const server = http.createServer(app);
 

@@ -1,10 +1,14 @@
 {
   "name": "crawler",
-  "version": "0.0.1",
+  "version": "0.5.0",
   "description": "Web crawler",
   "main": "index.js",
+  "config": {
+    "domain": "http://wiprodigital.com/"
+  },
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "serve": "node ./server/server"
   },
   "repository": {
     "type": "git",
