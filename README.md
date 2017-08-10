@@ -27,3 +27,6 @@ To start server:
 4. Update exception handling for sites with dead end links (for example order page with dynamic url generation)
 5. We can create pseudo *'abstract'* class and than create more universal crawlers | in the same time we can use provided `options` as a extension for already created class.
 6. We can add generators in couple of places 
+7. Support for different links version / www.wp.pl / wp.pl /
+8. Use of `node-worker-farm` to spread the task to couple different nodes
+9. Add clustering for better performance with more than one request
